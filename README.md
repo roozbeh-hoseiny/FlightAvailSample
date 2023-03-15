@@ -6,7 +6,10 @@ This is a sample project to retrieve available flights from multiple suppliers t
 Each supplier is an adapter that makes an API call to retrieve data, and then maps the response to the desired format.
 
 We can learn
-    # Adapter pattern
+<ul>
+    <li># Adapter pattern</li>
+</ul>
+    
     # Factory pattern
     # IHttpClientFactory And IHttpClient
     # Delegating Handlers
