@@ -37,7 +37,7 @@ internal sealed class FlightAvailService : IFlightAvailService
             }
 
             var supplierAdapter = this._supplierFactory.Create(sup);
-            var adapterResult = await supplierAdapter.Avail(request.FromDate, request.ToDate, cancellationToken).ConfigureAwait(false);
+            var adapterResult = await supplierAdapter!.Avail(request.FromDate, request.ToDate, cancellationToken).ConfigureAwait(false);
             this._logger.LogInformation("'{supllier}' response count :> {cnt}", sup.ToString(), (adapterResult?.Count ?? 0));
             
             if (!(adapterResult?.Any() ?? false)) continue;

@@ -2,7 +2,9 @@
 using FlightAvail.Service.Abstraction;
 using FlightAvail.Service.DependencyInjection;
 using FlightAvailService.Samples.Shared.HttpClientHandlers;
+using FlightAvailService.Samples.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace FlightAvailService.Samples.Shared
@@ -19,20 +21,23 @@ namespace FlightAvailService.Samples.Shared
             });
             #endregion
 
+            services.TryAddScoped<ITokenProvider, TokenProvider>();
+
             #region " Registering all required FlightAvailService Services "
             services.AddFlightAvailService(opts =>
-                {
-                    opts.Supplier1CustomerId = "supplier1-customerId";
-                    opts.Supplier2SiteName = "SampleSiteName";
-                    opts.Supplier2FlightType = "charter";
-                    opts.Supplier2Id = "id";
-                });
+            {
+                opts.Supplier1CustomerId = "supplier1-customerId";
+                opts.Supplier2SiteName = "SampleSiteName";
+                opts.Supplier2FlightType = "charter";
+                opts.Supplier2Id = "id";
+            });
             #endregion
 
             #region " HttpClient Handlers And DelegatingHandlers "
             services
                    .AddTransient<DefaultClientHandler>()
                    .AddTransient<LoggingDelegatingHandler>()
+                   .AddTransient<TokenProviderDelegatingHandler>()
                    .AddTransient<Supplier1SampleResponseDelegatingHandler>()
                    .AddTransient<Supplier2SampleResponseDelegatingHandler>();
             #endregion
@@ -44,6 +49,7 @@ namespace FlightAvailService.Samples.Shared
             }).ConfigureHttpMessageHandlerBuilder(builder =>
             {
                 builder.AdditionalHandlers.Add(builder.Services.GetService<LoggingDelegatingHandler>()!);
+                builder.AdditionalHandlers.Add(builder.Services.GetService<TokenProviderDelegatingHandler>()!);
                 builder.AdditionalHandlers.Add(builder.Services.GetService<Supplier1SampleResponseDelegatingHandler>()!);
                 builder.PrimaryHandler = builder.Services.GetService<DefaultClientHandler>()!;
             });
@@ -56,6 +62,7 @@ namespace FlightAvailService.Samples.Shared
             }).ConfigureHttpMessageHandlerBuilder(builder =>
             {
                 builder.AdditionalHandlers.Add(builder.Services.GetService<LoggingDelegatingHandler>()!);
+                builder.AdditionalHandlers.Add(builder.Services.GetService<TokenProviderDelegatingHandler>()!);
                 builder.AdditionalHandlers.Add(builder.Services.GetService<Supplier2SampleResponseDelegatingHandler>()!);
                 builder.PrimaryHandler = builder.Services.GetService<DefaultClientHandler>()!;
             }); 
